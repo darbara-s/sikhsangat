@@ -149,7 +149,28 @@ export default function AddEvent() {
         )}
 
         <form onSubmit={handleSubmit}>
-            {/* Content Column */}
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-start relative">
+
+            {/* Left Column — Desktop Poster (Luma Style) */}
+            <div className="hidden md:block w-full md:w-[320px] shrink-0 sticky top-8">
+              <div className="aspect-square rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800 bg-[var(--surface)] flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-300 group overflow-hidden relative shadow-sm hover:shadow-md">
+                <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[var(--color-primary)]/10 transition-all duration-300">
+                  <ImageIcon className="text-[var(--muted)] group-hover:text-[var(--color-primary)] transition-colors" size={32} />
+                </div>
+                <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-[var(--color-primary)] transition-colors">Add Event Poster</p>
+                <p className="text-xs text-[var(--muted)] mt-1.5 px-6 opacity-70">PNG, JPG, or GIF recommended (max. 5MB)</p>
+              </div>
+
+              {/* Minimal Desktop Indicator (Optional) */}
+              <div className="mt-4 p-4 bg-[var(--surface)] rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3 opacity-60">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <Globe size={16} />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Public Event</span>
+              </div>
+            </div>
+
+            {/* Right Column — Content Column */}
             <div className="flex-1 min-w-0 w-full space-y-6">
               {/* Event Name */}
               <div className="mb-2">
@@ -343,8 +364,8 @@ export default function AddEvent() {
                 </div>
               </div>
 
-              {/* Poster Upload (Small) */}
-              <div className="mb-8">
+              {/* Poster Upload (Small - Mobile Only) */}
+              <div className="mb-8 md:hidden">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)] mb-3 px-1">Event Poster</h3>
                 <div className="group relative flex items-center gap-4 p-4 rounded-2xl border-2 border-dashed border-gray-100 dark:border-gray-800 bg-[var(--surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-200 cursor-pointer">
                   <div className="w-12 h-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center group-hover:bg-[var(--color-primary)]/10 transition-all">
@@ -373,6 +394,7 @@ export default function AddEvent() {
                 )}
               </button>
             </div>
+          </div>
         </form>
       </div>
     </div>
