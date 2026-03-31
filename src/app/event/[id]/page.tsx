@@ -9,7 +9,7 @@ import {
   Map as MapIcon, Bookmark, CheckCircle2
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { getEventById, rsvpToEvent, unrsvpFromEvent, EventData } from "@/lib/firestore";
+import { getEventById, rsvpToEvent, unrsvpFromEvent, saveEventToProfile, unsaveEventFromProfile, EventData } from "@/lib/firestore";
 import Link from "next/link";
 
 // Mock featured events fallback (same as Home page)
@@ -72,13 +72,22 @@ export default function EventDetailsPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { user, setIsAuthModalOpen, refreshProfile } = useAuth();
+  const { user, profile, setIsAuthModalOpen, refreshProfile } = useAuth();
   
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRsvped, setIsRsvped] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
+
+  // Initialize saved state from profile
+  useEffect(() => {
+    if (profile?.savedEvents?.includes(id)) {
+      setIsSaved(true);
+    } else {
+      setIsSaved(false);
+    }
+  }, [profile, id]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -143,9 +152,23 @@ export default function EventDetailsPage() {
       setIsAuthModalOpen(true);
       return;
     }
-    setIsSaved(!isSaved);
-    // Future: implement saveToFirestore(id, user.uid)
-    await refreshProfile();
+    
+    // Optimistic UI update
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+    
+    try {
+      if (newSavedState) {
+        await saveEventToProfile(user.uid, id);
+      } else {
+        await unsaveEventFromProfile(user.uid, id);
+      }
+      await refreshProfile();
+    } catch (err) {
+      console.error("Error saving event:", err);
+      // Revert on error
+      setIsSaved(!newSavedState);
+    }
   };
 
   if (loading) {

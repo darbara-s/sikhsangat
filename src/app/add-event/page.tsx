@@ -147,7 +147,7 @@ export default function AddEvent() {
 
             {/* Left Column — Poster Upload */}
             <div className="w-full md:w-[280px] shrink-0">
-              <div className="aspect-square rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-[var(--surface)] flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-200 group overflow-hidden relative">
+              <div className="aspect-video md:aspect-square rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-[var(--surface)] flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-200 group overflow-hidden relative">
                 <div className="w-14 h-14 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[var(--color-primary)]/10 transition-all duration-200">
                   <ImageIcon className="text-[var(--muted)] group-hover:text-[var(--color-primary)] transition-colors" size={28} />
                 </div>

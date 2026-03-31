@@ -5,9 +5,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Calendar, MapPin, Clock, PlusCircle, Loader2, CheckCircle2, Users, LogIn } from "lucide-react";
-import { getEventsByUser, getEventsAttendedByUser, EventData } from "@/lib/firestore";
+import { getEventsByUser, getEventsAttendedByUser, getSavedEventsByUser, EventData } from "@/lib/firestore";
 
-type Tab = "upcoming" | "past";
+type Tab = "upcoming" | "past" | "saved";
 
 interface GroupedEvents {
   [dateKey: string]: EventData[];
@@ -19,6 +19,7 @@ export default function MyEvents() {
   const [tab, setTab] = useState<Tab>("upcoming");
   const [createdEvents, setCreatedEvents] = useState<EventData[]>([]);
   const [attendedEvents, setAttendedEvents] = useState<EventData[]>([]);
+  const [savedEvents, setSavedEvents] = useState<EventData[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
   useEffect(() => {
@@ -31,12 +32,14 @@ export default function MyEvents() {
     async function fetchEvents() {
       if (!user) return;
       try {
-        const [created, attended] = await Promise.all([
+        const [created, attended, saved] = await Promise.all([
           getEventsByUser(user.uid),
           getEventsAttendedByUser(user.uid),
+          getSavedEventsByUser(user.uid),
         ]);
         setCreatedEvents(created);
         setAttendedEvents(attended);
+        setSavedEvents(saved);
       } catch (err) {
         console.error("Error fetching events:", err);
       } finally {
@@ -56,21 +59,29 @@ export default function MyEvents() {
 
   const now = new Date();
 
-  // Merge & deduplicate events
-  const allEvents = [...createdEvents];
-  for (const attended of attendedEvents) {
-    if (!allEvents.find((e) => e.id === attended.id)) {
-      allEvents.push(attended);
+  // Determine which list to show
+  let baseList: EventData[] = [];
+  if (tab === "saved") {
+    baseList = [...savedEvents];
+  } else {
+    // Merge & deduplicate created + attended events
+    baseList = [...createdEvents];
+    for (const attended of attendedEvents) {
+      if (!baseList.find((e) => e.id === attended.id)) {
+        baseList.push(attended);
+      }
     }
   }
 
-  // Filter by upcoming / past
-  const filtered = allEvents.filter((event) => {
+  // Filter by upcoming / past (only applies to upcoming/past tabs)
+  let filtered = baseList.filter((event) => {
+    if (tab === "saved") return true; // Show all saved events regardless of date
+    
     const eventDate = event.date?.toDate?.() || new Date();
     return tab === "upcoming" ? eventDate >= now : eventDate < now;
   });
 
-  // Sort: upcoming = ascending, past = descending
+  // Sort: upcoming = ascending, past/saved = descending
   filtered.sort((a, b) => {
     const dateA = a.date?.toDate?.()?.getTime() || 0;
     const dateB = b.date?.toDate?.()?.getTime() || 0;
@@ -125,6 +136,16 @@ export default function MyEvents() {
               >
                 Past
               </button>
+              <button
+                onClick={() => setTab("saved")}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  tab === "saved"
+                    ? "bg-[var(--color-primary)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                Saved
+              </button>
             </div>
           </div>
         </div>
@@ -143,12 +164,14 @@ export default function MyEvents() {
               <Calendar className="text-[var(--muted)]" size={36} />
             </div>
             <h2 className="text-xl font-bold mb-3 text-[var(--foreground)]">
-              {tab === "upcoming" ? "No upcoming events" : "No past events"}
+              {tab === "upcoming" ? "No upcoming events" : tab === "past" ? "No past events" : "No saved events"}
             </h2>
             <p className="text-[var(--muted)] mb-8 max-w-sm mx-auto">
               {tab === "upcoming"
                 ? "You don't have any upcoming events yet. Browse Diwans or add your own!"
-                : "You haven't attended any past events yet."}
+                : tab === "past"
+                ? "You haven't attended any past events yet."
+                : "You haven't saved any events yet. Bookmark events to find them easily later."}
             </p>
             <div className="flex gap-3 justify-center">
               <Link
@@ -258,6 +281,11 @@ export default function MyEvents() {
                                         Created by you
                                       </span>
                                     )}
+                                    {tab === "saved" && (
+                                      <span className="inline-flex items-center gap-1 text-xs font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full">
+                                        Saved
+                                      </span>
+                                    )}
                                     {event.attendees && event.attendees.length > 0 && (
                                       <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--muted)]">
                                         <Users size={12} />
@@ -279,13 +307,6 @@ export default function MyEvents() {
           </div>
         )}
 
-        {/* Add event FAB on mobile */}
-        <Link
-          href="/add-event"
-          className="fixed bottom-8 right-8 w-14 h-14 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center shadow-xl hover:bg-[var(--color-primary-hover)] hover:shadow-2xl hover:scale-110 transition-all duration-200 z-40 md:hidden"
-        >
-          <PlusCircle size={24} />
-        </Link>
       </div>
     </div>
   );

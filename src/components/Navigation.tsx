@@ -11,7 +11,6 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, loading, setIsAuthModalOpen, signOut } = useAuth();
@@ -60,29 +59,29 @@ export default function Navigation() {
           <span className="hidden lg:inline font-black tracking-tight bg-gradient-to-r from-[var(--color-primary)] to-orange-600 bg-clip-text text-transparent">Sikh Sangat</span>
         </Link>
 
-        {/* Meetup Style Search Bar in Header */}
-        <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-[var(--color-primary)]/20 transition-all">
-          <div className="flex items-center gap-2 px-4 flex-1 border-r border-gray-200 dark:border-gray-700">
-            <Search className="text-gray-400" size={18} />
+        {/* Responsive Meetup Style Search Bar in Header */}
+        <form onSubmit={handleSearch} className="flex items-center flex-1 max-w-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full overflow-hidden shadow-inner focus-within:ring-2 focus-within:ring-[var(--color-primary)]/20 transition-all text-sm md:text-base">
+          <div className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 flex-1 border-r border-gray-200 dark:border-gray-700 w-1/2">
+            <Search className="text-gray-400 shrink-0" size={16} />
             <input 
               type="text" 
               placeholder="Search events" 
-              className="w-full bg-transparent py-2.5 outline-none text-sm font-medium"
+              className="w-full bg-transparent py-2 md:py-2.5 outline-none font-medium truncate"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 px-4 flex-1">
-            <MapPin className="text-gray-400" size={18} />
+          <div className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 flex-1 w-1/2">
+            <MapPin className="text-gray-400 shrink-0" size={16} />
             <input 
               type="text" 
               placeholder="Location" 
-              className="w-full bg-transparent py-2.5 outline-none text-sm font-medium"
+              className="w-full bg-transparent py-2 md:py-2.5 outline-none font-medium truncate"
               value={locationSearch}
               onChange={(e) => setLocationSearch(e.target.value)}
             />
           </div>
-          <button type="submit" className="bg-[var(--color-primary)] text-white p-2.5 m-1 rounded-full hover:bg-[var(--color-primary-hover)] transition-all shadow-md">
+          <button type="submit" className="hidden md:block bg-[var(--color-primary)] text-white p-2.5 m-1 rounded-full hover:bg-[var(--color-primary-hover)] transition-all shadow-md shrink-0">
             <Search size={18} />
           </button>
         </form>
@@ -173,50 +172,6 @@ export default function Navigation() {
         )}
       </div>
 
-      {/* Mobile Actions */}
-      <div className="md:hidden flex items-center gap-4">
-        <button className="p-2 text-gray-500 hover:text-[var(--color-primary)]">
-          <Search size={22} />
-        </button>
-        <button
-          className="p-2 text-gray-500 hover:text-[var(--color-primary)] transition-colors"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 p-6 flex flex-col gap-6 md:hidden shadow-2xl animate-in slide-in-from-top-4 duration-300">
-          <div className="flex flex-col gap-4">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-gray-800 dark:text-white">Browse Events</Link>
-            <Link href="/map" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-gray-800 dark:text-white">Map View</Link>
-            {user && <Link href="/my-events" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-gray-800 dark:text-white">My Events</Link>}
-          </div>
-          
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
-            {mounted && !loading && (
-              user ? (
-                <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-black text-xl">
-                    {user.displayName?.charAt(0) || "U"}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white">{user.displayName}</h4>
-                    <p className="text-sm text-gray-500 font-medium">View Profile</p>
-                  </div>
-                </Link>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <button onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full py-4 font-bold text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl">Log in</button>
-                  <button onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full py-4 font-bold text-white bg-[var(--color-primary)] rounded-xl">Sign up</button>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   );
 }

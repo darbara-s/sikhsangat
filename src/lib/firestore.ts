@@ -44,6 +44,7 @@ export interface UserProfile {
   eventsAttended: number;
   eventsContributed: number;
   badges: Badge[];
+  savedEvents?: string[]; // Array of event IDs
   createdAt: Timestamp;
 }
 
@@ -133,6 +134,24 @@ export async function unrsvpFromEvent(eventId: string, uid: string) {
   await setDoc(userRef, { eventsAttended: increment(-1) }, { merge: true });
 }
 
+export async function getSavedEventsByUser(uid: string): Promise<EventData[]> {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) return [];
+
+  const data = userSnap.data() as UserProfile;
+  const savedIds = data.savedEvents || [];
+  if (savedIds.length === 0) return [];
+
+  // Fetch all saved events in parallel
+  const fetches = savedIds.map((id) => getEventById(id));
+  const results = await Promise.all(fetches);
+
+  // Filter out nulls and format as array
+  const events = results.filter((e) => e !== null) as EventData[];
+  return events.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0)); // Most recent date first
+}
+
 // ─── User Profiles ───────────────────────────────────────────────
 
 export async function getOrCreateUserProfile(
@@ -165,6 +184,7 @@ export async function getOrCreateUserProfile(
         earnedAt: Timestamp.now(),
       },
     ],
+    savedEvents: [],
     createdAt: Timestamp.now(),
   };
 
@@ -190,5 +210,32 @@ export async function awardBadge(uid: string, badge: Badge) {
 
   await updateDoc(userRef, {
     badges: [...(data.badges || []), badge],
+  });
+}
+
+export async function saveEventToProfile(uid: string, eventId: string) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) return;
+
+  const data = userSnap.data() as UserProfile;
+  const saved = data.savedEvents || [];
+  if (saved.includes(eventId)) return;
+
+  await updateDoc(userRef, {
+    savedEvents: [...saved, eventId],
+  });
+}
+
+export async function unsaveEventFromProfile(uid: string, eventId: string) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) return;
+
+  const data = userSnap.data() as UserProfile;
+  const saved = data.savedEvents || [];
+  
+  await updateDoc(userRef, {
+    savedEvents: saved.filter(id => id !== eventId),
   });
 }

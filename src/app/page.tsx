@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Search, MapPin, Calendar, Filter, Bookmark, Users, ChevronDown, Globe, Heart, Mic, Music, BookOpen, Coffee, MessageSquare, Plus, LayoutGrid, Map as MapIcon } from "lucide-react";
+import { Search, MapPin, Calendar, Filter, Bookmark, Users, ChevronDown, Globe, Heart, Mic, Music, BookOpen, Coffee, MessageSquare, Plus, LayoutGrid, Map as MapIcon, X, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -103,6 +103,7 @@ function HomeContent() {
   const sortDropdownRef = useRef<HTMLDivElement>(null);
   const [showTabs, setShowTabs] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -241,94 +242,131 @@ function HomeContent() {
           </div>
 
           {/* Filters Bar & View Toggle */}
-          <div className="flex items-center gap-3 pb-2 min-w-full md:min-w-0">
+          <div className="flex items-center gap-3 pb-2 w-full justify-between overflow-visible">
             
-            {/* Date Dropdown */}
-            <div className="relative" ref={dateDropdownRef}>
-              <button 
-                onClick={() => setActiveDropdown(activeDropdown === "date" ? null : "date")}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${dateFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-              >
-                <Calendar size={16} /> 
-                {dateFilter === "any" ? "Any day" : dateFilter === "today" ? "Today" : "This Week"} 
-                <ChevronDown size={14} className={`transition-transform ${activeDropdown === "date" ? "rotate-180" : ""}`} />
-              </button>
+            {/* Horizontal Scrollable Filters Container */}
+            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap flex-1 no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pr-2">
+              
+              {/* Desktop Dropdowns (Hidden on Mobile) */}
+              <div className="hidden md:flex items-center gap-3">
+                {/* Date Dropdown */}
+                <div className="relative" ref={dateDropdownRef}>
+                  <button 
+                    onClick={() => setActiveDropdown(activeDropdown === "date" ? null : "date")}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${dateFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
+                >
+                  <Calendar size={16} /> 
+                  {dateFilter === "any" ? "Any day" : dateFilter === "today" ? "Today" : "This Week"} 
+                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "date" ? "rotate-180" : ""}`} />
+                </button>
 
-              {activeDropdown === "date" && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
-                  {["any", "today", "week"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => { setDateFilter(option); setActiveDropdown(null); }}
-                      className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${dateFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
-                    >
-                      {option === "any" ? "Any day" : option === "today" ? "Today" : "This Week"}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {activeDropdown === "date" && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                    {["any", "today", "week"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => { setDateFilter(option); setActiveDropdown(null); }}
+                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${dateFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                      >
+                        {option === "any" ? "Any day" : option === "today" ? "Today" : "This Week"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Type Dropdown */}
+              <div className="relative" ref={typeDropdownRef}>
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === "type" ? null : "type")}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${typeFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
+                >
+                  <Mic size={16} /> 
+                  {typeFilter === "any" ? "Any type" : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)} 
+                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "type" ? "rotate-180" : ""}`} />
+                </button>
+
+                {activeDropdown === "type" && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                    {["any", "ragi", "katha", "social"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => { setTypeFilter(option); setActiveDropdown(null); }}
+                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${typeFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                      >
+                        {option === "any" ? "Any type" : option.charAt(0).toUpperCase() + option.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Sort Dropdown */}
+              <div className="relative" ref={sortDropdownRef}>
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === "sort" ? null : "sort")}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${sortBy !== "upcoming" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
+                >
+                  <Filter size={16} /> 
+                  {sortBy === "upcoming" ? "Soonest" : sortBy === "newest" ? "Newest" : "A-Z"} 
+                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "sort" ? "rotate-180" : ""}`} />
+                </button>
+
+                {activeDropdown === "sort" && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                    {[
+                      { id: "upcoming", name: "Soonest" },
+                      { id: "newest", name: "Newest" },
+                      { id: "alphabetical", name: "A-Z" }
+                    ].map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => { setSortBy(option.id); setActiveDropdown(null); }}
+                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${sortBy === option.id ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                      >
+                        {option.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden md:block"></div>
+              </div>
+
+              {/* Mobile Horizontal Pill Buttons (Hidden on Desktop) */}
+              <div className="flex md:hidden items-center gap-2">
+                <button 
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className={`flex items-center gap-1.5 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${dateFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--foreground)]"}`}
+                >
+                  <Calendar size={14} /> 
+                  {dateFilter === "any" ? "Any day" : dateFilter === "today" ? "Today" : "This Week"} 
+                  <ChevronDown size={12} className="text-[var(--muted)]" />
+                </button>
+
+                <button 
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className={`flex items-center gap-1.5 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${typeFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--foreground)]"}`}
+                >
+                  <Mic size={14} /> 
+                  {typeFilter === "any" ? "Any type" : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)} 
+                  <ChevronDown size={12} className="text-[var(--muted)]" />
+                </button>
+
+                <button 
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className={`flex items-center gap-1.5 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${sortBy !== "upcoming" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--foreground)]"}`}
+                >
+                  <Filter size={14} /> 
+                  {sortBy === "upcoming" ? "Soonest" : sortBy === "newest" ? "Newest" : "A-Z"} 
+                  <ChevronDown size={12} className="text-[var(--muted)]" />
+                </button>
+              </div>
+
             </div>
 
-            {/* Type Dropdown */}
-            <div className="relative" ref={typeDropdownRef}>
-              <button 
-                onClick={() => setActiveDropdown(activeDropdown === "type" ? null : "type")}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${typeFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-              >
-                <Mic size={16} /> 
-                {typeFilter === "any" ? "Any type" : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)} 
-                <ChevronDown size={14} className={`transition-transform ${activeDropdown === "type" ? "rotate-180" : ""}`} />
-              </button>
-
-              {activeDropdown === "type" && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
-                  {["any", "ragi", "katha", "social"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => { setTypeFilter(option); setActiveDropdown(null); }}
-                      className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${typeFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
-                    >
-                      {option === "any" ? "Any type" : option.charAt(0).toUpperCase() + option.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Sort Dropdown */}
-            <div className="relative" ref={sortDropdownRef}>
-              <button 
-                onClick={() => setActiveDropdown(activeDropdown === "sort" ? null : "sort")}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${sortBy !== "upcoming" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-              >
-                <Filter size={16} /> 
-                {sortBy === "upcoming" ? "Soonest" : sortBy === "newest" ? "Newest" : "A-Z"} 
-                <ChevronDown size={14} className={`transition-transform ${activeDropdown === "sort" ? "rotate-180" : ""}`} />
-              </button>
-
-              {activeDropdown === "sort" && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
-                  {[
-                    { id: "upcoming", name: "Soonest" },
-                    { id: "newest", name: "Newest" },
-                    { id: "alphabetical", name: "A-Z" }
-                  ].map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => { setSortBy(option.id); setActiveDropdown(null); }}
-                      className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${sortBy === option.id ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
-                    >
-                      {option.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden md:block"></div>
-
-            {/* Map/Grid Toggle */}
-            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center">
+            {/* Map/Grid Toggle (Sticky Right) */}
+            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center shrink-0">
               <button 
                 onClick={() => setViewMode("grid")}
                 className={`p-1.5 rounded-full transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
@@ -423,6 +461,92 @@ function HomeContent() {
           </div>
         )}
       </main>
+
+      {/* --- Mobile Bottom Sheet Filters --- */}
+      {isMobileFilterOpen && (
+        <div className="md:hidden fixed inset-0 z-[100] flex flex-col justify-end">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
+            onClick={() => setIsMobileFilterOpen(false)}
+          ></div>
+          
+          {/* Sheet */}
+          <div className="relative bg-[var(--surface)] w-full rounded-t-3xl p-6 pb-safe shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-black">Filters & Sort</h3>
+              <button 
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Date */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 block">Date</label>
+                <div className="flex flex-wrap gap-2">
+                  {["any", "today", "week"].map((option) => (
+                    <button
+                      key={`mob-date-${option}`}
+                      onClick={() => setDateFilter(option)}
+                      className={`px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${dateFilter === option ? "bg-[var(--color-primary)] text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
+                    >
+                      {option === "any" ? "Any day" : option === "today" ? "Today" : "This Week"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Type */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 block">Type</label>
+                <div className="flex flex-wrap gap-2">
+                  {["any", "ragi", "katha", "social"].map((option) => (
+                    <button
+                      key={`mob-type-${option}`}
+                      onClick={() => setTypeFilter(option)}
+                      className={`px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${typeFilter === option ? "bg-[var(--color-primary)] text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
+                    >
+                      {option === "any" ? "Any type" : option.charAt(0).toUpperCase() + option.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Sort */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 block">Sort By</label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "upcoming", name: "Soonest" },
+                    { id: "newest", name: "Newest" },
+                    { id: "alphabetical", name: "A-Z" }
+                  ].map((option) => (
+                    <button
+                      key={`mob-sort-${option.id}`}
+                      onClick={() => setSortBy(option.id)}
+                      className={`px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${sortBy === option.id ? "bg-[var(--color-primary)] text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
+                    >
+                      {option.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setIsMobileFilterOpen(false)}
+              className="w-full mt-8 py-4 bg-[var(--color-primary)] text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg"
+            >
+              Show {filteredEvents.length} Results
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
