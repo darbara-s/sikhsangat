@@ -164,30 +164,6 @@ export default function AddEvent() {
                 />
               </div>
 
-              {/* Performer Type Selector - Chips */}
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)] mb-3 px-1">Event Type</h3>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { id: "ragi", label: "Ragi" },
-                    { id: "kirtaniye", label: "Kirtaniye" },
-                    { id: "katha", label: "Katha Vachak" }
-                  ].map((type) => (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => handleTypeSelect(type.id)}
-                      className={`px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${
-                        formData.performerType === type.id
-                          ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/30 -translate-y-0.5"
-                          : "bg-[var(--surface)] border-gray-100 dark:border-gray-800 text-[var(--muted)] hover:border-gray-300 dark:hover:border-gray-600 active:scale-95"
-                      }`}
-                    >
-                      {type.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
 
               {/* Date & Time Card */}
@@ -319,6 +295,31 @@ export default function AddEvent() {
                     ></textarea>
                   </div>
                 )}
+              </div>
+
+              {/* Performer Type Selector - Chips */}
+              <div className="mb-6">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)] mb-3 px-1">Event Type</h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "ragi", label: "Ragi" },
+                    { id: "kirtaniye", label: "Kirtaniye" },
+                    { id: "katha", label: "Katha Vachak" }
+                  ].map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => handleTypeSelect(type.id)}
+                      className={`px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${
+                        formData.performerType === type.id
+                          ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/30 -translate-y-0.5"
+                          : "bg-[var(--surface)] border-gray-100 dark:border-gray-800 text-[var(--muted)] hover:border-gray-300 dark:hover:border-gray-600 active:scale-95"
+                      }`}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Event Options */}
