@@ -15,6 +15,11 @@ export default function Navigation() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, loading, setIsAuthModalOpen, signOut } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   const [locationSearch, setLocationSearch] = useState(searchParams.get("l") || "");
@@ -85,7 +90,7 @@ export default function Navigation() {
 
       {/* Desktop Auth/Actions */}
       <div className="hidden md:flex items-center gap-4">
-        {!loading && (
+        {mounted && !loading && (
           user ? (
             <div className="flex items-center gap-6">
               <Link href="/add-event" className="text-sm font-bold text-gray-600 dark:text-gray-300 hover:text-[var(--color-primary)] flex items-center gap-1.5 transition-colors">
@@ -191,7 +196,7 @@ export default function Navigation() {
           </div>
           
           <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
-            {!loading && (
+            {mounted && !loading && (
               user ? (
                 <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-black text-xl">
