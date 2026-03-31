@@ -31,9 +31,15 @@ export default function AddEvent() {
   const [showDescription, setShowDescription] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
 
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  const handleTypeSelect = (type: string) => {
+    setFormData((prev) => ({ ...prev, performerType: type }));
+  };
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -143,54 +149,46 @@ export default function AddEvent() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-
-            {/* Left Column — Poster Upload */}
-            <div className="w-full md:w-[280px] shrink-0">
-              <div className="aspect-video md:aspect-square rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-[var(--surface)] flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-200 group overflow-hidden relative">
-                <div className="w-14 h-14 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-[var(--color-primary)]/10 transition-all duration-200">
-                  <ImageIcon className="text-[var(--muted)] group-hover:text-[var(--color-primary)] transition-colors" size={28} />
-                </div>
-                <p className="text-sm font-semibold text-[var(--muted)] group-hover:text-[var(--color-primary)] transition-colors">Upload Poster</p>
-                <p className="text-xs text-[var(--muted)] mt-1 opacity-70">PNG, JPG (max. 5MB)</p>
-              </div>
-
-              {/* Performer Type Selector */}
-              <div className="mt-4 bg-[var(--surface)] rounded-2xl border border-gray-100 dark:border-gray-800 p-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
-                  <Mic size={18} className="text-[var(--color-primary)]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <label className="text-[10px] uppercase tracking-widest text-[var(--muted)] font-bold block mb-0.5">Type</label>
-                  <select
-                    name="performerType"
-                    value={formData.performerType}
-                    onChange={handleChange}
-                    className="w-full bg-transparent text-sm font-semibold text-[var(--foreground)] outline-none cursor-pointer appearance-none"
-                    required
-                  >
-                    <option value="">Select type...</option>
-                    <option value="ragi">Ragi</option>
-                    <option value="kirtaniye">Kirtaniye</option>
-                    <option value="katha">Katha Vachak</option>
-                  </select>
-                </div>
-                <ChevronDown size={16} className="text-[var(--muted)] shrink-0" />
-              </div>
-            </div>
-
-            {/* Right Column — Event Details */}
-            <div className="flex-1 min-w-0 w-full">
+            {/* Content Column */}
+            <div className="flex-1 min-w-0 w-full space-y-6">
               {/* Event Name */}
-              <input
-                type="text"
-                name="performerName"
-                value={formData.performerName}
-                onChange={handleChange}
-                placeholder="Event Name"
-                className="w-full bg-transparent text-3xl md:text-4xl font-bold text-[var(--foreground)] placeholder-[var(--muted)]/50 outline-none mb-8 border-none leading-tight"
-                required
-              />
+              <div className="mb-2">
+                <input
+                  type="text"
+                  name="performerName"
+                  value={formData.performerName}
+                  onChange={handleChange}
+                  placeholder="Event Name"
+                  className="w-full bg-transparent text-3xl md:text-4xl font-bold text-[var(--foreground)] placeholder-[var(--muted)]/50 outline-none border-none leading-tight"
+                  required
+                />
+              </div>
+
+              {/* Performer Type Selector - Chips */}
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)] mb-3 px-1">Event Type</h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "ragi", label: "Ragi" },
+                    { id: "kirtaniye", label: "Kirtaniye" },
+                    { id: "katha", label: "Katha Vachak" }
+                  ].map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => handleTypeSelect(type.id)}
+                      className={`px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${
+                        formData.performerType === type.id
+                          ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/30 -translate-y-0.5"
+                          : "bg-[var(--surface)] border-gray-100 dark:border-gray-800 text-[var(--muted)] hover:border-gray-300 dark:hover:border-gray-600 active:scale-95"
+                      }`}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
 
               {/* Date & Time Card */}
               <div className="bg-[var(--surface)] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden mb-4">
@@ -344,6 +342,20 @@ export default function AddEvent() {
                 </div>
               </div>
 
+              {/* Poster Upload (Small) */}
+              <div className="mb-8">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)] mb-3 px-1">Event Poster</h3>
+                <div className="group relative flex items-center gap-4 p-4 rounded-2xl border-2 border-dashed border-gray-100 dark:border-gray-800 bg-[var(--surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all duration-200 cursor-pointer">
+                  <div className="w-12 h-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center group-hover:bg-[var(--color-primary)]/10 transition-all">
+                    <ImageIcon className="text-[var(--muted)] group-hover:text-[var(--color-primary)]" size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--foreground)]">Upload Poster Image</p>
+                    <p className="text-xs text-[var(--muted)] opacity-70">Optional: PNG or JPG (max. 5MB)</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -360,7 +372,6 @@ export default function AddEvent() {
                 )}
               </button>
             </div>
-          </div>
         </form>
       </div>
     </div>
