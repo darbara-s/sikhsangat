@@ -211,13 +211,13 @@ function HomeContent() {
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                  activeCategory === cat.id ? "bg-[var(--color-primary)] text-white" : "bg-gray-50 dark:bg-gray-800"
+                  activeCategory === cat.id ? "bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/20" : "bg-gray-50 dark:bg-gray-800"
                 }`}>
                   {cat.icon}
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-wider">{cat.name}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">{cat.name}</span>
                 {activeCategory === cat.id && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--color-primary)] rounded-full animate-in fade-in zoom-in duration-300"></div>
+                  <div className="absolute -bottom-px left-0 right-0 h-1 bg-[var(--color-primary)] rounded-full animate-in fade-in zoom-in duration-300"></div>
                 )}
               </button>
             ))}
@@ -228,9 +228,9 @@ function HomeContent() {
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-10">
         
         {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row justify-between items-baseline gap-6 mb-10">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--foreground)] mb-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-8 mb-6 md:mb-10">
+          <div className="max-w-2xl">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--foreground)] mb-2 leading-tight">
               {searchTerm 
                 ? `${filteredEvents.length} events for "${searchTerm}"` 
                 : locationSearch 
@@ -238,35 +238,30 @@ function HomeContent() {
                   : "Upcoming events around the world"
               }
             </h1>
-            <p className="text-[var(--muted)] text-base font-medium">Discover kirtan and katha from your favorite performers</p>
+            <p className="text-[var(--muted)] text-sm md:text-base font-medium opacity-70">Discover kirtan and katha from your favorite performers</p>
           </div>
 
-          {/* Filters Bar & View Toggle */}
-          <div className="flex items-center gap-3 pb-2 w-full justify-between overflow-visible">
-            
-            {/* Horizontal Scrollable Filters Container */}
-            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap flex-1 no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pr-2">
-              
-              {/* Desktop Dropdowns (Hidden on Mobile) */}
-              <div className="hidden md:flex items-center gap-3">
-                {/* Date Dropdown */}
-                <div className="relative" ref={dateDropdownRef}>
-                  <button 
-                    onClick={() => setActiveDropdown(activeDropdown === "date" ? null : "date")}
+          {/* Filters Bar & Toggle Container (Desktop) */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2">
+              {/* Date Dropdown */}
+              <div className="relative" ref={dateDropdownRef}>
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === "date" ? null : "date")}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${dateFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--muted)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                 >
                   <Calendar size={16} /> 
                   {dateFilter === "any" ? "Any day" : dateFilter === "today" ? "Today" : "This Week"} 
-                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "date" ? "rotate-180" : ""}`} />
+                  <ChevronDown size={13} className={`transition-transform duration-300 ${activeDropdown === "date" ? "rotate-180" : ""}`} />
                 </button>
 
                 {activeDropdown === "date" && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--surface)] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-200">
                     {["any", "today", "week"].map((option) => (
                       <button
                         key={option}
                         onClick={() => { setDateFilter(option); setActiveDropdown(null); }}
-                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${dateFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                        className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${dateFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                       >
                         {option === "any" ? "Any day" : option === "today" ? "Today" : "This Week"}
                       </button>
@@ -283,16 +278,16 @@ function HomeContent() {
                 >
                   <Mic size={16} /> 
                   {typeFilter === "any" ? "Any type" : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)} 
-                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "type" ? "rotate-180" : ""}`} />
+                  <ChevronDown size={13} className={`transition-transform duration-300 ${activeDropdown === "type" ? "rotate-180" : ""}`} />
                 </button>
 
                 {activeDropdown === "type" && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--surface)] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-200">
                     {["any", "ragi", "katha", "social"].map((option) => (
                       <button
                         key={option}
                         onClick={() => { setTypeFilter(option); setActiveDropdown(null); }}
-                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${typeFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                        className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${typeFilter === option ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                       >
                         {option === "any" ? "Any type" : option.charAt(0).toUpperCase() + option.slice(1)}
                       </button>
@@ -309,11 +304,11 @@ function HomeContent() {
                 >
                   <Filter size={16} /> 
                   {sortBy === "upcoming" ? "Soonest" : sortBy === "newest" ? "Newest" : "A-Z"} 
-                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === "sort" ? "rotate-180" : ""}`} />
+                  <ChevronDown size={13} className={`transition-transform duration-300 ${activeDropdown === "sort" ? "rotate-180" : ""}`} />
                 </button>
 
                 {activeDropdown === "sort" && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 py-2">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--surface)] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-200">
                     {[
                       { id: "upcoming", name: "Soonest" },
                       { id: "newest", name: "Newest" },
@@ -322,7 +317,7 @@ function HomeContent() {
                       <button
                         key={option.id}
                         onClick={() => { setSortBy(option.id); setActiveDropdown(null); }}
-                        className={`w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${sortBy === option.id ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)]"}`}
+                        className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${sortBy === option.id ? "text-[var(--color-primary)] bg-[var(--color-primary)]/5" : "text-[var(--foreground)] hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                       >
                         {option.name}
                       </button>
@@ -330,11 +325,31 @@ function HomeContent() {
                   </div>
                 )}
               </div>
-              <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2 hidden md:block"></div>
-              </div>
+            </div>
 
-              {/* Mobile Horizontal Pill Buttons (Hidden on Desktop) */}
-              <div className="flex md:hidden items-center gap-2">
+            <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+            
+            {/* View Toggle */}
+            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center">
+              <button 
+                onClick={() => setViewMode("grid")}
+                className={`p-1.5 rounded-full transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
+              >
+                <LayoutGrid size={18} />
+              </button>
+              <button 
+                onClick={() => setViewMode("map")}
+                className={`p-1.5 rounded-full transition-all ${viewMode === "map" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
+              >
+                <MapIcon size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Filters (Row style on mobile) */}
+        <div className="flex md:hidden items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap no-scrollbar pb-2">
                 <button 
                   onClick={() => setIsMobileFilterOpen(true)}
                   className={`flex items-center gap-1.5 px-4 py-2 border rounded-full text-sm font-semibold transition-all ${dateFilter !== "any" ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "border-gray-200 dark:border-gray-700 bg-[var(--surface)] text-[var(--foreground)]"}`}
@@ -363,25 +378,22 @@ function HomeContent() {
                 </button>
               </div>
 
+              {/* Mobile View Toggle */}
+              <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center shrink-0">
+                <button 
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded-full transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  <LayoutGrid size={18} />
+                </button>
+                <button 
+                  onClick={() => setViewMode("map")}
+                  className={`p-1.5 rounded-full transition-all ${viewMode === "map" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  <MapIcon size={18} />
+                </button>
+              </div>
             </div>
-
-            {/* Map/Grid Toggle (Sticky Right) */}
-            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full items-center shrink-0">
-              <button 
-                onClick={() => setViewMode("grid")}
-                className={`p-1.5 rounded-full transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
-              >
-                <LayoutGrid size={18} />
-              </button>
-              <button 
-                onClick={() => setViewMode("map")}
-                className={`p-1.5 rounded-full transition-all ${viewMode === "map" ? "bg-white dark:bg-gray-700 shadow-sm text-[var(--color-primary)]" : "text-gray-400 hover:text-gray-600"}`}
-              >
-                <MapIcon size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* --- View Content --- */}
         {loading ? (
