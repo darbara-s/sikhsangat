@@ -4,6 +4,7 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import AuthModal from "@/components/AuthModal";
 import { AuthProvider } from "@/context/AuthContext";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
-          <Navigation />
+          <Suspense fallback={<div className="h-16 bg-[var(--surface)] border-b border-gray-100 dark:border-gray-800" />}>
+            <Navigation />
+          </Suspense>
           <AuthModal />
           <main className="flex-grow pt-16">
             {children}

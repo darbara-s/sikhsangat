@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Search, MapPin, Calendar, Filter, Bookmark, Users, ChevronDown, Globe, Heart, Mic, Music, BookOpen, Coffee, MessageSquare, Plus, LayoutGrid, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getAllEvents, EventData } from "@/lib/firestore";
@@ -83,7 +83,7 @@ const CATEGORIES = [
   { name: "Social Activities", icon: <MessageSquare size={20} />, id: "social" },
 ];
 
-export default function Home() {
+function HomeContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [dbEvents, setDbEvents] = useState<any[]>([]);
@@ -424,5 +424,17 @@ export default function Home() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="w-12 h-12 border-4 border-gray-200 dark:border-gray-800 border-t-[var(--color-primary)] rounded-full animate-spin"></div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
